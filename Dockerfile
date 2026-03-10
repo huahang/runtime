@@ -70,6 +70,7 @@ RUN cd /root/src/frp && \
     go build -o frpc \
     -trimpath \
     -buildvcs=false \
+    -tags noweb \
     -ldflags="-s -w" \
     -v \
     ./cmd/frpc
@@ -80,6 +81,7 @@ RUN cd /root/src/frp && \
     go build -o frps \
     -trimpath \
     -buildvcs=false \
+    -tags noweb \
     -ldflags="-s -w" \
     -v \
     ./cmd/frps

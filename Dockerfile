@@ -60,6 +60,33 @@ RUN cd /root/src/xray-core && \
     ./main
 RUN cp /root/src/xray-core/xray /opt/v2ray/xray
 
+# Clone and build frp
+
+RUN git clone --branch v0.67.0 --depth 1 https://github.com/fatedier/frp /root/src/frp
+RUN cd /root/src/frp && \
+    GOROOT=/opt/go1.26.1 \
+    PATH=$GOROOT/bin:$PATH \
+    CGO_ENABLED=0 \
+    go build -o frpc \
+    -trimpath \
+    -buildvcs=false \
+    -ldflags="-s -w" \
+    -v \
+    ./cmd/frpc
+RUN cd /root/src/frp && \
+    GOROOT=/opt/go1.26.1 \
+    PATH=$GOROOT/bin:$PATH \
+    CGO_ENABLED=0 \
+    go build -o frps \
+    -trimpath \
+    -buildvcs=false \
+    -ldflags="-s -w" \
+    -v \
+    ./cmd/frps
+RUN mkdir -p /opt/frp
+RUN cp /root/src/frp/frpc /opt/frp/frpc
+RUN cp /root/src/frp/frps /opt/frp/frps
+
 # Install nvm and nodejs
 
 RUN apt-get -y update

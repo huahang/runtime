@@ -69,3 +69,12 @@ RUN apt-get -y upgrade
 
 RUN git clone --branch v0.40.4 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
 RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.14.0'
+
+# Install dependencies and build frp
+
+RUN git clone --branch v0.67.0 --depth 1 https://github.com/fatedier/frp /root/src/frp
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frpc && npm install'
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frpc && npm run build'
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm install'
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm run build'
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp && GOROOT=/opt/go1.26.1 PATH=/opt/go1.26.1/bin:$PATH make'

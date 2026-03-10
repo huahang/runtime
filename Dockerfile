@@ -68,4 +68,4 @@ RUN apt-get -y install python-dev-is-python3
 RUN apt-get -y upgrade
 
 RUN git clone --branch v0.40.4 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
-RUN . /root/.nvm/nvm.sh && nvm install -s --lts
+RUN . /root/.nvm/nvm.sh && nvm install -s v24.14.0

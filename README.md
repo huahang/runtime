@@ -1,6 +1,6 @@
 # runtime
 
-Multi-architecture Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, and Node.js runtime, based on Ubuntu 24.04.
+Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, and Node.js runtime, based on Ubuntu 24.04.
 
 ## What's Included
 
@@ -11,7 +11,7 @@ Multi-architecture Docker container image with pre-built Go toolchains, V2Ray/Xr
 | Go | 1.26.1 | `/opt/go1.26.1/` |
 | V2Ray | 5.46.0 | `/opt/v2ray/` |
 | Xray | 26.2.6 | `/opt/v2ray/xray` |
-| Node.js | LTS (via NVM 0.40.4) | managed by NVM |
+| Node.js | 24.14.0 (via NVM 0.40.4) | managed by NVM |
 
 ## Pulling the Image
 
@@ -25,13 +25,13 @@ docker pull ghcr.io/huahang/runtime:main
 # Single architecture
 docker build -t runtime .
 
-# Multi-architecture
-docker buildx build --platform linux/amd64,linux/arm64 -t runtime .
+# With buildx
+docker buildx build --platform linux/amd64 -t runtime .
 ```
 
 ## CI/CD
 
-A GitHub Actions workflow builds and pushes multi-arch images to GHCR on:
+A GitHub Actions workflow builds and pushes images to GHCR on:
 
 - Push to `main`
 - Tags matching `v*`

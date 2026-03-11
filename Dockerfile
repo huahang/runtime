@@ -78,3 +78,6 @@ RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frpc && npm run build'
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm install'
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm run build'
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp && GOROOT=/opt/go1.26.1 PATH=/opt/go1.26.1/bin:$PATH make'
+RUN mkdir -p /opt/frp
+RUN cp /root/src/frp/bin/frps /opt/frp/frps
+RUN cp /root/src/frp/bin/frpc /opt/frp/frpc

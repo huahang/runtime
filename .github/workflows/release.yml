@@ -1,0 +1,40 @@
+name: Publish Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/releases/*.md"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
+      - name: Find new release notes files
+        id: find
+        run: |
+          file=$(git diff-tree --no-commit-id -r ${{ github.event.before }}..${{ github.sha }} --name-only --diff-filter=A | grep '^\.github/releases/.*\.md$' | head -n 1)
+          if [ -n "$file" ]; then
+            tag=$(basename "$file" .md)
+            echo "tag=$tag" >> "$GITHUB_OUTPUT"
+            echo "notes_file=$file" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish release
+        if: steps.find.outputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.find.outputs.tag }}
+          name: ${{ steps.find.outputs.tag }} release
+          body_path: ${{ steps.find.outputs.notes_file }}
+          draft: false
+          prerelease: false
+          make_latest: true

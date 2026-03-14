@@ -81,3 +81,11 @@ RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp && GOROOT=/opt/go1.26.1 PAT
 RUN mkdir -p /opt/frp
 RUN cp /root/src/frp/bin/frps /opt/frp/frps
 RUN cp /root/src/frp/bin/frpc /opt/frp/frpc
+
+# Install dumb-init
+
+RUN apt-get -y update
+RUN apt-get -y install dumb-init
+RUN apt-get -y upgrade
+
+ENTRYPOINT ["dumb-init", "--"]

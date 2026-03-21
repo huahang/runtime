@@ -25,14 +25,29 @@ There is no Makefile, test suite, or linter — the project is a pure Dockerfile
 
 The Dockerfile uses a sequential build flow:
 
-1. **Go bootstrap chain**: System Go → Go 1.22.6 → Go 1.24.6 → Go 1.26.1 (each version bootstraps the next via `GOROOT_BOOTSTRAP`)
-2. **V2Ray**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
-3. **Xray**: Built from source with `CGO_ENABLED=0`
-4. **Node.js**: Installed via NVM (source build), used to build FRP web UIs
-5. **FRP**: Web UIs built with npm, binaries built with Go's make
+1. **Node.js bootstrap**: Install NVM v0.40.4 and Node.js v24.14.0 first (source build) so npm is available for FRP web UI builds
+2. **Go bootstrap chain**: System Go → Go 1.22.6 → Go 1.24.6 → Go 1.26.1 (each version bootstraps the next via `GOROOT_BOOTSTRAP`)
+3. **V2Ray (v5.47.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
+4. **Xray (v26.2.6)**: Built from source with `CGO_ENABLED=0`
+5. **FRP (v0.68.0)**: Web UIs built with npm, binaries built with Go's make
 6. **dumb-init**: Installed from apt, set as `ENTRYPOINT` for proper signal forwarding to child processes
 
+## Pinned Component Versions
+
+- V2Ray: `v5.47.0` (from `v2fly/v2ray-core`)
+- Xray: `v26.2.6` (from `XTLS/Xray-core`)
+- FRP: `v0.68.0` (from `fatedier/frp`)
+- NVM: `v0.40.4` (from `nvm-sh/nvm`)
+- Node.js: `v24.14.0` (installed via NVM)
+
 All Go builds use `/opt/go1.26.1` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the NVM environment.
+
+## Maintenance Comments
+
+- Keep the Node.js/NVM block before FRP build steps because FRP web assets require npm during image build.
+- Keep Go version bootstrapping order unchanged unless all downstream `GOROOT_BOOTSTRAP` references are updated together.
+- If V2Ray/FRP versions are bumped in the Dockerfile, update both this file and `README.md` in the same change.
+- Preserve architecture handling in V2Ray packaging (`x86_64` and `aarch64`) to avoid breaking multi-arch builds.
 
 ## Key Paths in the Image
 

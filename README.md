@@ -6,8 +6,6 @@ Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fa
 
 | Component | Version | Path |
 |-----------|---------|------|
-| Go (bootstrap) | 1.22.6 | `/opt/go1.22.6/` |
-| Go | 1.24.6 | `/opt/go1.24.6/` |
 | Go | 1.26.1 | `/opt/go1.26.1/` |
 | V2Ray | 5.47.0 | `/opt/v2ray/` |
 | Xray | 26.2.6 | `/opt/v2ray/xray` |
@@ -17,7 +15,7 @@ Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fa
 ## Build Notes
 
 - Node.js is installed early in the Dockerfile because FRP web UIs are built with npm before final FRP binaries are packaged.
-- Go 1.22.6 and 1.24.6 are intermediate bootstrap toolchains; the final build toolchain is Go 1.26.1.
+- Go 1.22.6 and 1.24.6 are intermediate bootstrap toolchains; only the final Go 1.26.1 remains in the image.
 - V2Ray release artifacts are produced with architecture-aware packaging (`amd64` and `arm64`) and extracted into `/opt/v2ray`.
 - Xray is compiled with `CGO_ENABLED=0` for static, portable binaries.
 - Runtime process handling uses `dumb-init` as entrypoint for cleaner signal forwarding in containers.

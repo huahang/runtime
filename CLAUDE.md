@@ -25,12 +25,12 @@ There is no Makefile, test suite, or linter — the project is a pure Dockerfile
 
 The Dockerfile uses a sequential build flow:
 
-1. **Node.js bootstrap**: Install NVM v0.40.4 and Node.js v24.14.0 first (source build) so npm is available for FRP web UI builds
-2. **Go bootstrap chain**: System Go → Go 1.22.6 → Go 1.24.6 → Go 1.26.1 (each version bootstraps the next via `GOROOT_BOOTSTRAP`)
-3. **V2Ray (v5.47.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
-4. **Xray (v26.2.6)**: Built from source with `CGO_ENABLED=0`
-5. **FRP (v0.68.0)**: Web UIs built with npm, binaries built with Go's make
-6. **dumb-init**: Installed from apt, set as `ENTRYPOINT` for proper signal forwarding to child processes
+1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
+2. **Node.js bootstrap**: Install NVM v0.40.4 and Node.js v24.14.0 (source build) so npm is available for FRP web UI builds
+3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.1 (via `GOROOT_BOOTSTRAP`)
+4. **V2Ray (v5.47.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
+5. **Xray (v26.2.6)**: Built from source with `CGO_ENABLED=0`
+6. **FRP (v0.68.0)**: Web UIs built with npm, binaries built with Go's make
 
 ## Pinned Component Versions
 
@@ -53,12 +53,11 @@ All Go builds use `/opt/go1.26.1` as `GOROOT`. NVM commands require `bash -c '. 
 
 | Component | Install Path |
 |-----------|-------------|
-| Go versions | `/opt/go1.22.6/`, `/opt/go1.24.6/`, `/opt/go1.26.1/` |
+| Go | `/opt/go1.26.1/` |
 | V2Ray | `/opt/v2ray/` |
 | Xray | `/opt/v2ray/xray` |
 | FRP | `/opt/frp/frps`, `/opt/frp/frpc` |
 | NVM/Node.js | `/root/.nvm/` |
-| Build sources | `/root/src/` |
 
 ## CI/CD
 
@@ -70,6 +69,9 @@ GitHub Actions workflow at `.github/workflows/docker.yml`:
 
 ## Conventions
 
-- Commit messages are in Chinese
+- Commit messages **must** follow the [Conventional Commits](https://www.conventionalcommits.org/) format: `<type>(<scope>): <description>`
+- Common types: `feat`, `fix`, `chore`, `docs`, `refactor`, `ci`
+- Examples: `chore(docker): optimize apt installs`, `feat(docker): add arm64 support`
 - Version pins are explicit (Go, V2Ray, Xray, NVM, Node.js, FRP all pinned to specific tags)
 - When updating a component version, update both the Dockerfile `git clone --branch` tag and the README.md version table
+- All apt installs consolidated in a single `RUN` at the top of the Dockerfile; later sections only contain source builds

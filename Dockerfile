@@ -9,6 +9,7 @@ RUN apt-get -y update && \
         file \
         git \
         golang \
+        libssl-dev \
         python-is-python3 \
         python-dev-is-python3 \
         wget \

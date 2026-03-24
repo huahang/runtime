@@ -20,7 +20,7 @@ RUN apt-get -y update && \
 # Install nvm and nodejs
 
 RUN git clone --branch v0.40.4 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
-RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.14.0'
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.14.0 -- --shared-openssl'
 
 # Build Go toolchain
 

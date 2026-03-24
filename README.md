@@ -22,6 +22,8 @@ Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fa
 
 ## Pulling the Image
 
+The image is a multi-arch manifest supporting both `amd64` and `arm64`. Docker automatically selects the correct variant for your host.
+
 ```bash
 docker pull ghcr.io/huahang/runtime:main
 ```
@@ -29,11 +31,14 @@ docker pull ghcr.io/huahang/runtime:main
 ## Building Locally
 
 ```bash
-# Single architecture
+# Single architecture (native)
 docker build -t runtime .
 
-# With buildx
+# amd64 with buildx
 docker buildx build --platform linux/amd64 -t runtime .
+
+# arm64 with buildx
+docker buildx build --platform linux/arm64 -t runtime .
 ```
 
 ## CI/CD
@@ -44,3 +49,5 @@ A GitHub Actions workflow builds and pushes images to GHCR on:
 - Tags matching `v*`
 
 Pull requests trigger a build without pushing.
+
+Images are built natively on both `amd64` (`ubuntu-latest`) and `arm64` (`ubuntu-24.04-arm`) runners in parallel, then merged into a single multi-arch manifest.

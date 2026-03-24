@@ -84,6 +84,18 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  build-and-push:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check build result
+        run: |
+          if [[ "${{ needs.build.result }}" != "success" ]]; then
+            echo "Build matrix failed: ${{ needs.build.result }}"
+            exit 1
+          fi
+
   merge:
     needs: [build]
     if: github.event_name != 'pull_request'

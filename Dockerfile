@@ -20,7 +20,17 @@ RUN apt-get -y update && \
 # Install nvm and nodejs
 
 RUN git clone --branch v0.40.4 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
-RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.14.0 -- --shared-openssl'
+RUN set -eux && \
+    NODE_VER=v24.14.0 && \
+    NODE_PREFIX=/root/.nvm/versions/node/${NODE_VER} && \
+    curl -fsSL https://nodejs.org/dist/${NODE_VER}/node-${NODE_VER}.tar.xz -o /tmp/node.tar.xz && \
+    tar -xJf /tmp/node.tar.xz -C /tmp && \
+    cd /tmp/node-${NODE_VER} && \
+    ./configure --prefix=${NODE_PREFIX} --shared-openssl && \
+    make -j$(nproc) && \
+    make install && \
+    bash -c ". /root/.nvm/nvm.sh && nvm alias default ${NODE_VER}" && \
+    rm -rf /tmp/node.tar.xz /tmp/node-${NODE_VER}
 
 # Build Go toolchain
 

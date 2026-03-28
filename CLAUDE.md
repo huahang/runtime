@@ -28,14 +28,14 @@ The Dockerfile uses a sequential build flow:
 1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
 2. **Node.js bootstrap**: Install NVM v0.40.4 and Node.js v24.14.0 (source build) so npm is available for FRP web UI builds
 3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.1 (via `GOROOT_BOOTSTRAP`)
-4. **V2Ray (v5.47.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
-5. **Xray (v26.2.6)**: Built from source with `CGO_ENABLED=0`
+4. **V2Ray (v5.48.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
+5. **Xray (v26.3.27)**: Built from source with `CGO_ENABLED=0`
 6. **FRP (v0.68.0)**: Web UIs built with npm, binaries built with Go's make
 
 ## Pinned Component Versions
 
-- V2Ray: `v5.47.0` (from `v2fly/v2ray-core`)
-- Xray: `v26.2.6` (from `XTLS/Xray-core`)
+- V2Ray: `v5.48.0` (from `v2fly/v2ray-core`)
+- Xray: `v26.3.27` (from `XTLS/Xray-core`)
 - FRP: `v0.68.0` (from `fatedier/frp`)
 - NVM: `v0.40.4` (from `nvm-sh/nvm`)
 - Node.js: `v24.14.0` (installed via NVM)

@@ -7,8 +7,8 @@ Docker container image with pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fa
 | Component | Version | Path |
 |-----------|---------|------|
 | Go | 1.26.1 | `/opt/go1.26.1/` |
-| V2Ray | 5.47.0 | `/opt/v2ray/` |
-| Xray | 26.2.6 | `/opt/v2ray/xray` |
+| V2Ray | 5.48.0 | `/opt/v2ray/` |
+| Xray | 26.3.27 | `/opt/v2ray/xray` |
 | FRP | 0.68.0 | `/opt/frp/frps`, `/opt/frp/frpc` |
 | Node.js | 24.14.0 (via NVM 0.40.4) | managed by NVM |
 

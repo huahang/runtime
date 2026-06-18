@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Docker container image (`ghcr.io/huahang/runtime`) based on Ubuntu 24.04, packaging pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fast Reverse Proxy), and Node.js. The entire project is a single Dockerfile with CI/CD via GitHub Actions.
+Docker container image (`ghcr.io/huahang/runtime`) based on Ubuntu 26.04, packaging pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fast Reverse Proxy), and Node.js. The entire project is a single Dockerfile with CI/CD via GitHub Actions.
 
 ## Build Commands
 
@@ -27,20 +27,20 @@ The Dockerfile uses a sequential build flow:
 
 1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
 2. **Node.js bootstrap**: Install NVM v0.40.4 and Node.js v24.14.0 (source build) so npm is available for FRP web UI builds
-3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.1 (via `GOROOT_BOOTSTRAP`)
-4. **V2Ray (v5.48.0)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
-5. **Xray (v26.3.27)**: Built from source with `CGO_ENABLED=0`
+3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.4 (via `GOROOT_BOOTSTRAP`)
+4. **V2Ray (v5.51.2)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
+5. **Xray (v26.6.1)**: Built from source with `CGO_ENABLED=0`
 6. **FRP (v0.68.0)**: Web UIs built with npm, binaries built with Go's make
 
 ## Pinned Component Versions
 
-- V2Ray: `v5.48.0` (from `v2fly/v2ray-core`)
-- Xray: `v26.3.27` (from `XTLS/Xray-core`)
+- V2Ray: `v5.51.2` (from `v2fly/v2ray-core`)
+- Xray: `v26.6.1` (from `XTLS/Xray-core`)
 - FRP: `v0.68.0` (from `fatedier/frp`)
 - NVM: `v0.40.4` (from `nvm-sh/nvm`)
 - Node.js: `v24.14.0` (installed via NVM)
 
-All Go builds use `/opt/go1.26.1` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the NVM environment.
+All Go builds use `/opt/go1.26.4` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the NVM environment.
 
 ## Maintenance Comments
 
@@ -53,7 +53,7 @@ All Go builds use `/opt/go1.26.1` as `GOROOT`. NVM commands require `bash -c '. 
 
 | Component | Install Path |
 |-----------|-------------|
-| Go | `/opt/go1.26.1/` |
+| Go | `/opt/go1.26.4/` |
 | V2Ray | `/opt/v2ray/` |
 | Xray | `/opt/v2ray/xray` |
 | FRP | `/opt/frp/frps`, `/opt/frp/frpc` |

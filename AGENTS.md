@@ -38,9 +38,9 @@ The Dockerfile uses a sequential build flow:
 |-----------|---------|--------|
 | V2Ray | v5.51.2 | `v2fly/v2ray-core` |
 | Xray | v26.6.1 | `XTLS/Xray-core` |
-| FRP | v0.68.0 | `fatedier/frp` |
-| NVM | v0.40.4 | `nvm-sh/nvm` |
-| Node.js | v24.14.0 | via NVM |
+| FRP | v0.69.1 | `fatedier/frp` |
+| NVM | v0.40.5 | `nvm-sh/nvm` |
+| Node.js | v24.17.0 | via NVM |
 | Go | 1.26.4 (final) | `golang/go` |
 
 All Go builds use `/opt/go1.26.4` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the environment.

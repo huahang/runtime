@@ -19,8 +19,8 @@ RUN apt-get -y update && \
 
 # Install nvm and nodejs
 
-RUN git clone --branch v0.40.4 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
-RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.14.0 --shared-openssl'
+RUN git clone --branch v0.40.5 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.17.0 --shared-openssl'
 
 # Build Go toolchain
 
@@ -68,7 +68,7 @@ RUN cd /root/src/xray-core && \
 
 # Build frp
 
-RUN git clone --branch v0.68.0 --depth 1 https://github.com/fatedier/frp /root/src/frp
+RUN git clone --branch v0.69.1 --depth 1 https://github.com/fatedier/frp /root/src/frp
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frpc && npm install && npm run build'
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm install && npm run build'
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp && GOROOT=/opt/go1.26.4 PATH=/opt/go1.26.4/bin:$PATH make' && \

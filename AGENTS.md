@@ -4,7 +4,7 @@ Instructions for AI coding agents working in this repository.
 
 ## Project Overview
 
-This repository contains a single `Dockerfile` that builds a container image (`ghcr.io/huahang/runtime`) based on Ubuntu 24.04. It packages pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fast Reverse Proxy), and Node.js. There is no application source code — the project is purely an infrastructure image.
+This repository contains a single `Dockerfile` that builds a container image (`ghcr.io/huahang/runtime`) based on Ubuntu 26.04. It packages pre-built Go toolchains, V2Ray/Xray proxies, FRP (Fast Reverse Proxy), and Node.js. There is no application source code — the project is purely an infrastructure image.
 
 ## Build Commands
 
@@ -27,7 +27,7 @@ The Dockerfile uses a sequential build flow:
 
 1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
 2. **Node.js bootstrap**: Install NVM and Node.js so npm is available for FRP web UI builds
-3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.1 (via `GOROOT_BOOTSTRAP`)
+3. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.4 (via `GOROOT_BOOTSTRAP`)
 4. **V2Ray**: Built via `user-package.sh` with architecture detection
 5. **Xray**: Built from source with `CGO_ENABLED=0`
 6. **FRP**: Web UIs built with npm, binaries built with Go's make
@@ -36,14 +36,14 @@ The Dockerfile uses a sequential build flow:
 
 | Component | Version | Source |
 |-----------|---------|--------|
-| V2Ray | v5.47.0 | `v2fly/v2ray-core` |
-| Xray | v26.2.6 | `XTLS/Xray-core` |
+| V2Ray | v5.51.2 | `v2fly/v2ray-core` |
+| Xray | v26.6.1 | `XTLS/Xray-core` |
 | FRP | v0.68.0 | `fatedier/frp` |
 | NVM | v0.40.4 | `nvm-sh/nvm` |
 | Node.js | v24.14.0 | via NVM |
-| Go | 1.26.1 (final) | `golang/go` |
+| Go | 1.26.4 (final) | `golang/go` |
 
-All Go builds use `/opt/go1.26.1` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the environment.
+All Go builds use `/opt/go1.26.4` as `GOROOT`. NVM commands require `bash -c '. /root/.nvm/nvm.sh && ...'` to source the environment.
 
 ## Dockerfile Conventions
 
@@ -79,7 +79,7 @@ GitHub Actions workflow at `.github/workflows/docker.yml`:
 
 | Component | Install Path |
 |-----------|-------------|
-| Go | `/opt/go1.26.1/` |
+| Go | `/opt/go1.26.4/` |
 | V2Ray | `/opt/v2ray/` |
 | Xray | `/opt/v2ray/xray` |
 | FRP | `/opt/frp/frps`, `/opt/frp/frpc` |

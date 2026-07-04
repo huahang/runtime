@@ -35,7 +35,7 @@ The Dockerfile uses a sequential build flow:
 ## Pinned Component Versions
 
 - V2Ray: `v5.51.2` (from `v2fly/v2ray-core`)
-- Xray: `v26.6.1` (from `XTLS/Xray-core`)
+- Xray: `v26.6.27` (from `XTLS/Xray-core`)
 - FRP: `v0.69.1` (from `fatedier/frp`)
 - NVM: `v0.40.5` (from `nvm-sh/nvm`)
 - Node.js: `v24.17.0` (installed via NVM)

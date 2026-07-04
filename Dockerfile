@@ -35,7 +35,7 @@ RUN rm -rf /opt/go1.22.6 /opt/go1.24.6
 
 # Build v2ray-core and xray-core
 
-RUN git clone --branch v26.6.1 --depth 1 https://github.com/XTLS/Xray-core /root/src/xray-core && \
+RUN git clone --branch v26.6.27 --depth 1 https://github.com/XTLS/Xray-core /root/src/xray-core && \
     git clone --branch v5.51.2 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
 
 RUN if [ "$(arch)" = "x86_64" ]; then \

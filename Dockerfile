@@ -9,18 +9,12 @@ RUN apt-get -y update && \
         file \
         git \
         golang \
-        libssl-dev \
         python-is-python3 \
         python-dev-is-python3 \
         wget \
         zip && \
     apt-get -y upgrade && \
     rm -rf /var/lib/apt/lists/*
-
-# Install nvm and nodejs
-
-RUN git clone --branch v0.40.5 --depth 1 https://github.com/nvm-sh/nvm.git /root/.nvm
-RUN bash -c '. /root/.nvm/nvm.sh && nvm install -s v24.17.0 --shared-openssl'
 
 # Build Go toolchain
 
@@ -65,16 +59,5 @@ RUN cd /root/src/xray-core && \
     ./main && \
     cp xray /opt/v2ray/xray && \
     rm -rf /root/src/xray-core
-
-# Build frp
-
-RUN git clone --branch v0.69.1 --depth 1 https://github.com/fatedier/frp /root/src/frp
-RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frpc && npm install && npm run build'
-RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp/web/frps && npm install && npm run build'
-RUN bash -c '. /root/.nvm/nvm.sh && cd /root/src/frp && GOROOT=/opt/go1.26.4 PATH=/opt/go1.26.4/bin:$PATH make' && \
-    mkdir -p /opt/frp && \
-    cp /root/src/frp/bin/frps /opt/frp/frps && \
-    cp /root/src/frp/bin/frpc /opt/frp/frpc && \
-    rm -rf /root/src/frp
 
 ENTRYPOINT ["dumb-init", "--"]

@@ -12,7 +12,7 @@ Docker container image with pre-built Go toolchains and V2Ray/Xray proxies, base
 
 ## Build Notes
 
-- Go 1.22.6 and 1.24.6 are intermediate bootstrap toolchains; only the final Go 1.26.4 remains in the image.
+- Go 1.26.4 is bootstrapped directly from the Ubuntu 26.04 system Go (1.26 series), which satisfies the Go >= 1.24.6 bootstrap requirement; no intermediate toolchains are built.
 - V2Ray release artifacts are produced with architecture-aware packaging (`amd64` and `arm64`) and extracted into `/opt/v2ray`.
 - Xray is compiled with `CGO_ENABLED=0` for static, portable binaries.
 - Runtime process handling uses `dumb-init` as entrypoint for cleaner signal forwarding in containers.

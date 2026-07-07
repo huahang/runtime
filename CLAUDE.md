@@ -26,7 +26,7 @@ There is no Makefile, test suite, or linter — the project is a pure Dockerfile
 The Dockerfile uses a sequential build flow:
 
 1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
-2. **Go bootstrap chain**: System Go (from apt) bootstraps Go 1.22.6, which bootstraps Go 1.24.6, which bootstraps Go 1.26.4 (via `GOROOT_BOOTSTRAP`)
+2. **Go bootstrap**: System Go (from apt, Go 1.26 series on Ubuntu 26.04) directly bootstraps Go 1.26.4 — Go 1.26.x only requires Go >= 1.24.6 for bootstrap, so no intermediate toolchains are needed
 3. **V2Ray (v5.51.2)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
 4. **Xray (v26.6.27)**: Built from source with `CGO_ENABLED=0`
 
@@ -39,7 +39,7 @@ All Go builds use `/opt/go1.26.4` as `GOROOT`.
 
 ## Maintenance Comments
 
-- Keep Go version bootstrapping order unchanged unless all downstream `GOROOT_BOOTSTRAP` references are updated together.
+- When bumping the built Go version, verify the system Go from apt still satisfies the new version's minimum bootstrap requirement (Go 1.N requires Go 1.M, M = N-2 rounded down to even); reintroduce an intermediate bootstrap step only if it does not.
 - If V2Ray/Xray versions are bumped in the Dockerfile, update both this file and `README.md` in the same change.
 - Preserve architecture handling in V2Ray packaging (`x86_64` and `aarch64`) to avoid breaking multi-arch builds.
 

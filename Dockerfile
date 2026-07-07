@@ -18,14 +18,11 @@ RUN apt-get -y update && \
 
 # Build Go toolchain
 
+# Go 1.26.x requires Go >= 1.24.6 for bootstrap; Ubuntu 26.04's golang
+# package ships Go 1.26, so the system Go bootstraps Go 1.26.4 directly.
 RUN mkdir -p /opt && \
-    git clone --branch go1.26.4 --depth 1 https://github.com/golang/go /opt/go1.26.4 && \
-    git clone --branch go1.24.6 --depth 1 https://github.com/golang/go /opt/go1.24.6 && \
-    git clone --branch go1.22.6 --depth 1 https://github.com/golang/go /opt/go1.22.6
-RUN cd /opt/go1.22.6/src && ./make.bash
-RUN cd /opt/go1.24.6/src && GOROOT_BOOTSTRAP=/opt/go1.22.6 ./make.bash
-RUN cd /opt/go1.26.4/src && GOROOT_BOOTSTRAP=/opt/go1.24.6 ./make.bash
-RUN rm -rf /opt/go1.22.6 /opt/go1.24.6
+    git clone --branch go1.26.4 --depth 1 https://github.com/golang/go /opt/go1.26.4
+RUN cd /opt/go1.26.4/src && ./make.bash
 
 # Build v2ray-core and xray-core
 

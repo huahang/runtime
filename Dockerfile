@@ -12,8 +12,8 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /opt && \
-    git clone --branch go1.26.4 --depth 1 https://github.com/golang/go /opt/go1.26.4
-RUN cd /opt/go1.26.4/src && CGO_ENABLED=0 ./make.bash
+    git clone --branch go1.26.5 --depth 1 https://github.com/golang/go /opt/go1.26.5
+RUN cd /opt/go1.26.5/src && CGO_ENABLED=0 ./make.bash
 
 RUN git clone --branch v5.51.2 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
 
@@ -23,8 +23,8 @@ RUN case "$(arch)" in \
         *) echo "Unsupported architecture: $(arch)" >&2; exit 1 ;; \
     esac && \
     cd /root/src/v2ray-core && \
-    GOROOT=/opt/go1.26.4 \
-    PATH=/opt/go1.26.4/bin:$PATH \
+    GOROOT=/opt/go1.26.5 \
+    PATH=/opt/go1.26.5/bin:$PATH \
     CGO_ENABLED=0 \
     ./release/user-package.sh "$package_arch" nosource tgz
 
@@ -33,11 +33,21 @@ RUN case "$(arch)" in \
         aarch64) package_arch=arm64 ;; \
         *) echo "Unsupported architecture: $(arch)" >&2; exit 1 ;; \
     esac && \
-    mkdir -p /opt/v2ray && \
-    tar xf /root/src/v2ray-core/v2ray-custom-"$package_arch"-* -C /opt/v2ray && \
+    mkdir -p /opt/v2ray /artifacts && \
+    set -- /root/src/v2ray-core/v2ray-custom-"$package_arch"-* && \
+    if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then \
+        echo "Expected exactly one V2Ray package for $package_arch" >&2; \
+        exit 1; \
+    fi && \
+    cp "$1" /artifacts/ && \
+    tar xf "$1" -C /opt/v2ray && \
     rm -rf /root/src/v2ray-core
 
-FROM gcr.io/distroless/static-debian13
+FROM scratch AS artifacts
+
+COPY --from=builder /artifacts/ /
+
+FROM gcr.io/distroless/static-debian13 AS runtime
 
 ENV PATH=/opt/v2ray
 

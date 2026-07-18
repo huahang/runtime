@@ -68,6 +68,23 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.cache-scope }}
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true
 
+      - name: Export V2Ray package
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          target: artifacts
+          cache-from: type=gha,scope=${{ matrix.cache-scope }}
+          outputs: type=local,dest=/tmp/v2ray-package
+
+      - name: Upload V2Ray package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2ray-${{ matrix.digest-name }}
+          path: /tmp/v2ray-package/*
+          if-no-files-found: error
+          compression-level: 0
+
       - name: Export digest
         if: github.event_name != 'pull_request'
         run: |

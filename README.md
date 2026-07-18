@@ -11,9 +11,9 @@ Distroless container image with V2Ray. Ubuntu 26.04 and its packaged Go compiler
 ## Build Notes
 
 - The Ubuntu builder installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`.
-- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.26.4 toolchain from source; that toolchain then builds V2Ray v5.51.2.
+- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.26.5 toolchain from source; that toolchain then builds V2Ray v5.51.2.
 - V2Ray is cloned from its pinned Git tag and packaged with `release/user-package.sh`, `CGO_ENABLED=0`, and explicit `amd64`/`arm64` architecture selection.
-- The complete `/opt/v2ray` release package is copied into the final distroless stage.
+- The generated tar package is retained in the `artifacts` target, while its contents are copied into the final distroless stage.
 - The final image uses the default root user and contains no Go toolchain, Xray, shell, package manager, compiler, Git, or init process.
 - There is no default command. Run `v2ray` explicitly; it runs directly as PID 1.
 
@@ -44,9 +44,20 @@ docker buildx build --platform linux/amd64 -t runtime .
 docker buildx build --platform linux/arm64 -t runtime .
 ```
 
+## Package Artifacts
+
+Each workflow run uploads the generated V2Ray tar packages as separate `v2ray-amd64` and `v2ray-arm64` artifacts. To export a package locally:
+
+```bash
+docker buildx build \
+  --platform linux/amd64 \
+  --target artifacts \
+  --output type=local,dest=dist .
+```
+
 ## CI/CD
 
-A GitHub Actions workflow builds and pushes images to GHCR on:
+A GitHub Actions workflow builds the runtime image and V2Ray package artifacts on:
 
 - Push to `main`
 - Tags matching `v*`

@@ -1,21 +1,21 @@
 # runtime
 
-Docker container image with pre-built Go toolchains and V2Ray/Xray proxies, based on Ubuntu 26.04.
+Distroless container image with V2Ray. Ubuntu 26.04 and its packaged Go compiler are used only during the build; the final image is based on `gcr.io/distroless/static-debian13`.
 
-## What's Included
+## Runtime Contents
 
 | Component | Version | Path |
 |-----------|---------|------|
-| Go | 1.26.4 | `/opt/go1.26.4/` |
-| V2Ray | 5.51.2 | `/opt/v2ray/` |
-| Xray | 26.6.27 | `/opt/v2ray/xray` |
+| V2Ray | 5.51.2 | `/opt/v2ray/v2ray` |
 
 ## Build Notes
 
-- Go 1.26.4 is bootstrapped directly from the Ubuntu 26.04 system Go (1.26 series), which satisfies the Go >= 1.24.6 bootstrap requirement; no intermediate toolchains are built.
-- V2Ray release artifacts are produced with architecture-aware packaging (`amd64` and `arm64`) and extracted into `/opt/v2ray`.
-- Xray is compiled with `CGO_ENABLED=0` for static, portable binaries.
-- Runtime process handling uses `dumb-init` as entrypoint for cleaner signal forwarding in containers.
+- The Ubuntu builder installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`.
+- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.26.4 toolchain from source; that toolchain then builds V2Ray v5.51.2.
+- V2Ray is cloned from its pinned Git tag and packaged with `release/user-package.sh`, `CGO_ENABLED=0`, and explicit `amd64`/`arm64` architecture selection.
+- The complete `/opt/v2ray` release package is copied into the final distroless stage.
+- The final image uses the default root user and contains no Go toolchain, Xray, shell, package manager, compiler, Git, or init process.
+- There is no default command. Run `v2ray` explicitly; it runs directly as PID 1.
 
 ## Pulling the Image
 
@@ -23,6 +23,12 @@ The image is a multi-arch manifest supporting both `amd64` and `arm64`. Docker a
 
 ```bash
 docker pull ghcr.io/huahang/runtime:main
+```
+
+## Running
+
+```bash
+docker run --rm ghcr.io/huahang/runtime:main v2ray version
 ```
 
 ## Building Locally

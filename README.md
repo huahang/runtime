@@ -46,7 +46,7 @@ docker buildx build --platform linux/arm64 -t runtime .
 
 ## Package Artifacts
 
-Each workflow run uploads the generated V2Ray tar packages as separate `v2ray-amd64` and `v2ray-arm64` artifacts. To export a package locally:
+Each workflow run uploads the generated V2Ray tar packages as separate `v2ray-amd64` and `v2ray-arm64` artifacts. Tag builds also attach both tar packages to the matching GitHub Release. To export a package locally:
 
 ```bash
 docker buildx build \

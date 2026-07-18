@@ -60,6 +60,7 @@ GitHub Actions workflow at `.github/workflows/docker.yml`:
 - Triggers on push to `main`, version tags (`v*`), and PRs
 - Builds natively for both `linux/amd64` and `linux/arm64`
 - Uploads the generated tar packages as `v2ray-amd64` and `v2ray-arm64` workflow artifacts
+- On `v*` tags, creates or updates the GitHub Release and attaches both tar packages
 - Pushes the runtime image to GHCR on push events; PRs build without pushing
 - Uses Docker layer caching via `type=gha`
 

@@ -20,10 +20,12 @@ jobs:
             runner: ubuntu-latest
             cache-scope: buildx-amd64
             digest-name: amd64
+            release-arch: x86_64
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
             cache-scope: buildx-arm64
             digest-name: arm64
+            release-arch: aarch64
 
     runs-on: ${{ matrix.runner }}
     permissions:
@@ -84,6 +86,36 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Export V2Ray release package
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          target: v2ray-artifacts
+          cache-from: type=gha,scope=${{ matrix.cache-scope }}
+          outputs: type=local,dest=/tmp/v2ray
+
+      - name: Normalize V2Ray package name
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          shopt -s nullglob
+          packages=(/tmp/v2ray/v2ray-custom-*)
+          if (( ${#packages[@]} != 1 )); then
+            echo "Expected one V2Ray package, found ${#packages[@]}"
+            exit 1
+          fi
+          mv "${packages[0]}" "/tmp/v2ray/v2ray-linux-${{ matrix.release-arch }}.tar.gz"
+
+      - name: Upload V2Ray package artifact
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2ray-${{ matrix.release-arch }}
+          path: /tmp/v2ray/v2ray-linux-${{ matrix.release-arch }}.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
   build-and-push:
     needs: [build]
     runs-on: ubuntu-latest
@@ -139,3 +171,28 @@ jobs:
           docker buildx imagetools create \
             $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
+
+  release:
+    needs: [build, merge]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download V2Ray package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          pattern: v2ray-*
+          merge-multiple: true
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" --clobber release-assets/*
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes release-assets/*
+          fi

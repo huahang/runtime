@@ -47,4 +47,4 @@ A GitHub Actions workflow builds and pushes images to GHCR on:
 
 Pull requests trigger a build without pushing.
 
-Images are built natively on both `amd64` (`ubuntu-latest`) and `arm64` (`ubuntu-24.04-arm`) runners in parallel, then merged into a single multi-arch manifest.
+Images are built natively on both `amd64` (`ubuntu-latest`) and `arm64` (`ubuntu-24.04-arm`) runners in parallel, then merged into a single multi-arch manifest. Tags matching `v*` also create a GitHub Release containing V2Ray packages for `x86_64` and `aarch64`.

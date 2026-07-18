@@ -1,4 +1,4 @@
-FROM ubuntu:26.04
+FROM ubuntu:26.04 AS build
 
 RUN apt-get -y update && \
     apt-get -y install \
@@ -34,6 +34,11 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     elif [ "$(arch)" = "aarch64" ]; then \
     cd /root/src/v2ray-core && GOROOT=/opt/go1.26.4 PATH=$GOROOT/bin:$PATH ./release/user-package.sh arm64 nosource tgz; \
     fi
+
+FROM scratch AS v2ray-artifacts
+COPY --from=build /root/src/v2ray-core/v2ray-custom-* /
+
+FROM build AS runtime
 
 RUN mkdir -p /opt/v2ray && \
     if [ "$(arch)" = "x86_64" ]; then \

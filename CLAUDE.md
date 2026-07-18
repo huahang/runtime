@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Docker container image (`ghcr.io/huahang/runtime`) based on Ubuntu 26.04, packaging pre-built Go toolchains and V2Ray/Xray proxies. The entire project is a single Dockerfile with CI/CD via GitHub Actions.
+Docker container image (`ghcr.io/huahang/runtime`) packaging V2Ray. Ubuntu 26.04 and its packaged Go compiler are used only for builds; the runtime is `gcr.io/distroless/static-debian13`. The entire project is a single Dockerfile with CI/CD via GitHub Actions.
 
 ## Build Commands
 
@@ -23,39 +23,41 @@ There is no Makefile, test suite, or linter — the project is a pure Dockerfile
 
 ## Architecture
 
-The Dockerfile uses a sequential build flow:
+The Dockerfile uses a multi-stage build flow:
 
-1. **System packages**: All apt dependencies installed in a single `RUN` at the top (build-essential, clang, curl, dumb-init, file, git, golang, python, wget, zip)
-2. **Go bootstrap**: System Go (from apt, Go 1.26 series on Ubuntu 26.04) directly bootstraps Go 1.26.4 — Go 1.26.x only requires Go >= 1.24.6 for bootstrap, so no intermediate toolchains are needed
-3. **V2Ray (v5.51.2)**: Built via `user-package.sh` with architecture detection (`x86_64`/`aarch64`)
-4. **Xray (v26.6.27)**: Built from source with `CGO_ENABLED=0`
+1. **Ubuntu builder**: Installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`; Ubuntu's Go package bootstraps Go 1.26.4 from source.
+2. **V2Ray (v5.51.2)**: Clones the pinned tag and runs `release/user-package.sh` with `CGO_ENABLED=0` and explicit `amd64`/`arm64` architecture selection.
+3. **Distroless runtime**: Copies the complete release package from `/opt/v2ray` into `static-debian13`.
 
 ## Pinned Component Versions
 
+- Go: `go1.26.4` (from `golang/go`)
 - V2Ray: `v5.51.2` (from `v2fly/v2ray-core`)
-- Xray: `v26.6.27` (from `XTLS/Xray-core`)
+- Runtime base: `gcr.io/distroless/static-debian13`
 
-All Go builds use `/opt/go1.26.4` as `GOROOT`.
+Ubuntu's packaged Go compiler is used only to bootstrap `/opt/go1.26.4`. The source-built compiler builds V2Ray, and neither compiler is copied into the final image.
 
 ## Maintenance Comments
 
-- When bumping the built Go version, verify the system Go from apt still satisfies the new version's minimum bootstrap requirement (Go 1.N requires Go 1.M, M = N-2 rounded down to even); reintroduce an intermediate bootstrap step only if it does not.
-- If V2Ray/Xray versions are bumped in the Dockerfile, update both this file and `README.md` in the same change.
-- Preserve architecture handling in V2Ray packaging (`x86_64` and `aarch64`) to avoid breaking multi-arch builds.
+- When updating Go, verify that Ubuntu's packaged Go compiler satisfies the new version's bootstrap requirement.
+- If the Go or V2Ray tag changes in the Dockerfile, update both this file and `README.md` in the same change.
+- Preserve the `x86_64`/`aarch64` mapping used by V2Ray's release packaging script so both image architectures continue to build.
+- Keep `CGO_ENABLED=0` so the V2Ray binary runs in `distroless/static`.
+- Git, download tools, the Go toolchains, and release scripts remain confined to the builder stage.
+- The final image has no Go toolchain, Xray, shell, package manager, Git, compiler, or init process.
+- The final image uses the default root user and has no default command.
 
 ## Key Paths in the Image
 
 | Component | Install Path |
 |-----------|-------------|
-| Go | `/opt/go1.26.4/` |
-| V2Ray | `/opt/v2ray/` |
-| Xray | `/opt/v2ray/xray` |
+| V2Ray | `/opt/v2ray/v2ray` |
 
 ## CI/CD
 
 GitHub Actions workflow at `.github/workflows/docker.yml`:
 - Triggers on push to `main`, version tags (`v*`), and PRs
-- Builds for `linux/amd64` only (ARM64 disabled)
+- Builds natively for both `linux/amd64` and `linux/arm64`
 - Pushes to GHCR on push events; PRs build without pushing
 - Uses Docker layer caching via `type=gha`
 
@@ -64,6 +66,6 @@ GitHub Actions workflow at `.github/workflows/docker.yml`:
 - Commit messages **must** follow the [Conventional Commits](https://www.conventionalcommits.org/) format: `<type>(<scope>): <description>`
 - Common types: `feat`, `fix`, `chore`, `docs`, `refactor`, `ci`
 - Examples: `chore(docker): optimize apt installs`, `feat(docker): add arm64 support`
-- Version pins are explicit (Go, V2Ray, Xray all pinned to specific tags)
-- When updating a component version, update both the Dockerfile `git clone --branch` tag and the README.md version table
-- All apt installs consolidated in a single `RUN` at the top of the Dockerfile; later sections only contain source builds
+- Go and V2Ray are pinned with explicit `git clone --branch` tags.
+- When updating either tag, update the corresponding version references in this file and `README.md`.
+- Keep build dependencies in the Ubuntu builder stage and copy only `/opt/v2ray` into the runtime stage.

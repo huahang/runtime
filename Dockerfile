@@ -51,7 +51,7 @@ RUN mkdir -p /opt && \
 RUN cd /opt/go1.26.5/src && CGO_ENABLED=0 ./make.bash
 
 # 以同样方式钉死 V2Ray。升级此 tag 时请同步更新 CLAUDE.md 与 README.md。
-RUN git clone --branch v5.51.2 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
+RUN git clone --branch v5.52.0 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
 
 # 将构建机 uname 架构映射为 V2Ray 打包脚本使用的架构名，然后调用上游发布脚本：
 #   nosource — 发布包中不包含源码归档

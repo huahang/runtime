@@ -23,7 +23,7 @@ FROM ubuntu:26.04 AS builder
 #   curl/wget — Go 的 make.bash 与 V2Ray 发布脚本下载时使用
 #   file      — 打包过程中可能用于检查二进制格式
 #   git       — 按钉死的 tag 浅克隆 Go 与 V2Ray
-#   golang    — Ubuntu 自带的 Go；仅用于引导 /opt/go1.26.5
+#   golang    — Ubuntu 自带的 Go；仅用于引导 /opt/go1.27.0
 #   zip       — V2Ray 的 release/user-package.sh 需要
 #
 # apt-get upgrade 使本层构建环境软件包保持较新；
@@ -44,11 +44,11 @@ RUN apt-get -y update && \
 # 升级此 tag 时，请确认 Ubuntu 自带的 `golang` 仍满足新版本的引导编译器要求，
 # 并在同一变更中更新 CLAUDE.md 与 README.md。
 RUN mkdir -p /opt && \
-    git clone --branch go1.26.5 --depth 1 https://github.com/golang/go /opt/go1.26.5
+    git clone --branch go1.27.0 --depth 1 https://github.com/golang/go /opt/go1.27.0
 
-# 关闭 CGO 编译工具链本身。后续编译 V2Ray 使用的是 /opt/go1.26.5/bin 下的编译器，
+# 关闭 CGO 编译工具链本身。后续编译 V2Ray 使用的是 /opt/go1.27.0/bin 下的编译器，
 # 而不是 Ubuntu 软件包里的 Go。
-RUN cd /opt/go1.26.5/src && CGO_ENABLED=0 ./make.bash
+RUN cd /opt/go1.27.0/src && CGO_ENABLED=0 ./make.bash
 
 # 以同样方式钉死 V2Ray。升级此 tag 时请同步更新 CLAUDE.md 与 README.md。
 RUN git clone --branch v5.53.0 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
@@ -57,7 +57,7 @@ RUN git clone --branch v5.53.0 --depth 1 https://github.com/v2fly/v2ray-core /ro
 #   nosource — 发布包中不包含源码归档
 #   tgz      — 产出 .tgz，而非其他归档格式
 #
-# GOROOT/PATH 强制使用源码编译的 Go 1.26.5；CGO_ENABLED=0 保证产物静态链接，
+# GOROOT/PATH 强制使用源码编译的 Go 1.27.0；CGO_ENABLED=0 保证产物静态链接，
 # 以便在 distroless/static 运行时中运行。
 RUN case "$(arch)" in \
         x86_64) package_arch=amd64 ;; \
@@ -65,8 +65,8 @@ RUN case "$(arch)" in \
         *) echo "Unsupported architecture: $(arch)" >&2; exit 1 ;; \
     esac && \
     cd /root/src/v2ray-core && \
-    GOROOT=/opt/go1.26.5 \
-    PATH=/opt/go1.26.5/bin:$PATH \
+    GOROOT=/opt/go1.27.0 \
+    PATH=/opt/go1.27.0/bin:$PATH \
     CGO_ENABLED=0 \
     ./release/user-package.sh "$package_arch" nosource tgz
 

@@ -11,7 +11,7 @@ Distroless container image with V2Ray. Ubuntu 26.04 and its packaged Go compiler
 ## Build Notes
 
 - The Ubuntu builder installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`.
-- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.26.5 toolchain from source; that toolchain then builds V2Ray v5.53.0.
+- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.27.0 toolchain from source; that toolchain then builds V2Ray v5.53.0.
 - V2Ray is cloned from its pinned Git tag and packaged with `release/user-package.sh`, `CGO_ENABLED=0`, and explicit `amd64`/`arm64` architecture selection.
 - The generated tar package is retained in the `artifacts` target, while its contents are copied into the final distroless stage.
 - The final image uses the default root user and contains no Go toolchain, Xray, shell, package manager, compiler, Git, or init process.

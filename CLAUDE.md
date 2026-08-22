@@ -26,14 +26,14 @@ There is no Makefile, test suite, or linter — the project is a pure Dockerfile
 The Dockerfile uses a multi-stage build flow:
 
 1. **Ubuntu builder**: Installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`; Ubuntu's Go package bootstraps Go 1.26.5 from source.
-2. **V2Ray (v5.52.0)**: Clones the pinned tag and runs `release/user-package.sh` with `CGO_ENABLED=0` and explicit `amd64`/`arm64` architecture selection.
+2. **V2Ray (v5.53.0)**: Clones the pinned tag and runs `release/user-package.sh` with `CGO_ENABLED=0` and explicit `amd64`/`arm64` architecture selection.
 3. **Artifact export**: The `artifacts` target exposes the generated V2Ray tar package for local export and CI upload.
 4. **Distroless runtime**: The default `runtime` target copies the complete release package from `/opt/v2ray` into `static-debian13`.
 
 ## Pinned Component Versions
 
 - Go: `go1.26.5` (from `golang/go`)
-- V2Ray: `v5.52.0` (from `v2fly/v2ray-core`)
+- V2Ray: `v5.53.0` (from `v2fly/v2ray-core`)
 - Runtime base: `gcr.io/distroless/static-debian13`
 
 Ubuntu's packaged Go compiler is used only to bootstrap `/opt/go1.26.5`. The source-built compiler builds V2Ray, and neither compiler is copied into the final image.

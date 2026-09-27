@@ -1,6 +1,6 @@
 # runtime
 
-带 V2Ray 的 Distroless 镜像. 构建时使用 Ubuntu 26.04 和系统自带的 Go, 最终镜像基于 `gcr.io/distroless/static-debian13`.
+带 V2Ray 的 Distroless 镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出固定的 Go 1.27.1, V2Ray 由这套从源码编译出来的工具链来编. 最终镜像基于 `gcr.io/distroless/static-debian13`.
 
 ## 镜像内容
 

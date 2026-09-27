@@ -10,7 +10,7 @@
 
 ## 项目是什么
 
-`ghcr.io/huahang/runtime` 是一份带 V2Ray 的容器镜像. 构建用 Ubuntu 26.04 和系统自带的 Go, 运行时基础镜像是 `gcr.io/distroless/static-debian13`. 仓库里主要就是一份 Dockerfile, 发布由 GitHub Actions 完成.
+`ghcr.io/huahang/runtime` 是一份带 V2Ray 的容器镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出钉死的 Go 1.27.1, V2Ray 由这套从源码编译出来的工具链来编. 运行时基础镜像是 `gcr.io/distroless/static-debian13`. 仓库里主要就是一份 Dockerfile, 发布由 GitHub Actions 完成.
 
 ## 怎么构建
 

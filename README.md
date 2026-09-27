@@ -1,52 +1,52 @@
 # runtime
 
-Distroless container image with V2Ray. Ubuntu 26.04 and its packaged Go compiler are used only during the build; the final image is based on `gcr.io/distroless/static-debian13`.
+带 V2Ray 的 Distroless 镜像。构建时使用 Ubuntu 26.04 和系统自带的 Go，最终镜像基于 `gcr.io/distroless/static-debian13`。
 
-## Runtime Contents
+## 镜像内容
 
-| Component | Version | Path |
-|-----------|---------|------|
+| 组件 | 版本 | 路径 |
+|------|------|------|
 | V2Ray | 5.54.2 | `/opt/v2ray/v2ray` |
 
-## Build Notes
+## 构建说明
 
-- The Ubuntu builder installs the build dependencies `curl`, `file`, `git`, `golang`, `wget`, and `zip`.
-- Ubuntu's packaged Go compiler bootstraps the pinned Go 1.27.1 toolchain from source; that toolchain then builds V2Ray v5.54.2.
-- V2Ray is cloned from its pinned Git tag and packaged with `release/user-package.sh`, `CGO_ENABLED=0`, and explicit `amd64`/`arm64` architecture selection.
-- The generated tar package is retained in the `artifacts` target, while its contents are copied into the final distroless stage.
-- The final image uses the default root user and contains no Go toolchain, Xray, shell, package manager, compiler, Git, or init process.
-- There is no default command. Run `v2ray` explicitly; it runs directly as PID 1.
+- 构建环境会安装 `curl`、`file`、`git`、`golang`、`wget` 和 `zip`。
+- 系统自带的 Go 先从源码引导出固定的 Go 1.27.1，再用它编译 V2Ray v5.54.2。
+- V2Ray 按固定的 Git tag 克隆，由 `release/user-package.sh` 打包。编译时设置 `CGO_ENABLED=0`，并按 `amd64` 或 `arm64` 选择架构。
+- 生成的 tar 包留在 `artifacts` 目标中，解压后的内容会复制进最终的 distroless 阶段。
+- 最终镜像以默认的 root 用户运行，其中没有 Go 工具链、Xray、shell、包管理器、编译器、Git 和 init 进程。
+- 镜像没有默认命令。需要自己运行 `v2ray`，这时它就是 PID 1。
 
-## Pulling the Image
+## 拉取
 
-The image is a multi-arch manifest supporting both `amd64` and `arm64`. Docker automatically selects the correct variant for your host.
+镜像同时提供 `amd64` 和 `arm64`。Docker 会按宿主机架构自动选择。
 
 ```bash
 docker pull ghcr.io/huahang/runtime:main
 ```
 
-## Running
+## 运行
 
 ```bash
 docker run --rm ghcr.io/huahang/runtime:main v2ray version
 ```
 
-## Building Locally
+## 在本地构建
 
 ```bash
-# Single architecture (native)
+# 本机架构
 docker build -t runtime .
 
-# amd64 with buildx
+# 构建 amd64
 docker buildx build --platform linux/amd64 -t runtime .
 
-# arm64 with buildx
+# 构建 arm64
 docker buildx build --platform linux/arm64 -t runtime .
 ```
 
-## Package Artifacts
+## 导出安装包
 
-Each workflow run uploads the generated V2Ray tar packages as separate `v2ray-amd64` and `v2ray-arm64` artifacts. Tag builds also attach both tar packages to the matching GitHub Release. To export a package locally:
+每次工作流运行都会把 V2Ray 的 tar 包分成 `v2ray-amd64` 和 `v2ray-arm64` 两个 artifact 上传。打 tag 的构建还会把这两个包附到对应的 GitHub Release。本地可以这样导出：
 
 ```bash
 docker buildx build \
@@ -55,13 +55,13 @@ docker buildx build \
   --output type=local,dest=dist .
 ```
 
-## CI/CD
+## 自动构建与发布
 
-A GitHub Actions workflow builds the runtime image and V2Ray package artifacts on:
+GitHub Actions 会在下面两种情况构建运行时镜像和 V2Ray 安装包：
 
-- Push to `main`
-- Tags matching `v*`
+- 推送到 `main`
+- 推送匹配 `v*` 的 tag
 
-Pull requests trigger a build without pushing.
+Pull Request 会触发构建，但不会推送镜像。
 
-Images are built natively on both `amd64` (`ubuntu-latest`) and `arm64` (`ubuntu-24.04-arm`) runners in parallel, then merged into a single multi-arch manifest.
+`amd64`（`ubuntu-latest`）和 `arm64`（`ubuntu-24.04-arm`）在各自的 runner 上并行构建，完成后合并成一份多架构镜像。

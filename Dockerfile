@@ -42,7 +42,7 @@ RUN apt-get -y update && \
 # 通过克隆官方 tag 钉死 Go 版本。深度 1 即可，构建只需该提交，无需完整历史。
 #
 # 升级此 tag 时，请确认 Ubuntu 自带的 `golang` 仍满足新版本的引导编译器要求，
-# 并在同一变更中更新 CLAUDE.md 与 README.md。
+# 并在同一变更中更新 AGENTS.md 与 README.md。
 RUN mkdir -p /opt && \
     git clone --branch go1.27.1 --depth 1 https://github.com/golang/go /opt/go1.27.1
 
@@ -50,7 +50,7 @@ RUN mkdir -p /opt && \
 # 而不是 Ubuntu 软件包里的 Go。
 RUN cd /opt/go1.27.1/src && CGO_ENABLED=0 ./make.bash
 
-# 以同样方式钉死 V2Ray。升级此 tag 时请同步更新 CLAUDE.md 与 README.md。
+# 以同样方式钉死 V2Ray。升级此 tag 时请同步更新 AGENTS.md 与 README.md。
 RUN git clone --branch v5.54.2 --depth 1 https://github.com/v2fly/v2ray-core /root/src/v2ray-core
 
 # 将构建机 uname 架构映射为 V2Ray 打包脚本使用的架构名，然后调用上游发布脚本：

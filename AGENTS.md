@@ -10,7 +10,7 @@
 
 ## 项目是什么
 
-`ghcr.io/huahang/runtime` 是一份带 V2Ray 的容器镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出钉死的 Go 1.27.1, V2Ray 由这套从源码编译出来的工具链来编. 运行时基础镜像是 `gcr.io/distroless/static-debian13`. 仓库里主要就是一份 Dockerfile, 发布由 GitHub Actions 完成.
+`ghcr.io/huahang/runtime` 是一份带 V2Ray 的容器镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出钉死的 Go 1.27.3, V2Ray 由这套从源码编译出来的工具链来编. 运行时基础镜像是 `gcr.io/distroless/static-debian13`. 仓库里主要就是一份 Dockerfile, 发布由 GitHub Actions 完成.
 
 ## 怎么构建
 
@@ -31,18 +31,18 @@ docker pull ghcr.io/huahang/runtime:main
 
 Dockerfile 分四段:
 
-1. **Ubuntu 构建环境**: 安装 `curl`, `file`, `git`, `golang`, `wget`, `zip`. 系统自带的 Go 只负责从源码引导出 Go 1.27.1.
-2. **V2Ray (v5.54.2)**: 按钉死的 tag 克隆源码, 再跑 `release/user-package.sh`. 编译时设置 `CGO_ENABLED=0`, 并按 `amd64` 或 `arm64` 选择架构.
+1. **Ubuntu 构建环境**: 安装 `curl`, `file`, `git`, `golang`, `wget`, `zip`. 系统自带的 Go 只负责从源码引导出 Go 1.27.3.
+2. **V2Ray (v5.56.0)**: 按钉死的 tag 克隆源码, 再跑 `release/user-package.sh`. 编译时设置 `CGO_ENABLED=0`, 并按 `amd64` 或 `arm64` 选择架构.
 3. **导出安装包**: `artifacts` 目标里只有打好的 V2Ray tar 包, 本地可以取出来, CI 也会把它上传.
 4. **Distroless 运行时**: 默认目标 `runtime` 把 `/opt/v2ray` 下的完整发布内容复制进 `static-debian13`.
 
 ## 钉死的版本
 
-- Go: `go1.27.1` (来自 `golang/go`)
-- V2Ray: `v5.54.2` (来自 `v2fly/v2ray-core`)
+- Go: `go1.27.3` (来自 `golang/go`)
+- V2Ray: `v5.56.0` (来自 `v2fly/v2ray-core`)
 - 运行时基础镜像: `gcr.io/distroless/static-debian13`
 
-Ubuntu 自带的 Go 只用来引导 `/opt/go1.27.1`. 编译 V2Ray 用的是这份从源码编出来的编译器. 两份编译器都留在构建阶段, 不会进最终镜像.
+Ubuntu 自带的 Go 只用来引导 `/opt/go1.27.3`. 编译 V2Ray 用的是这份从源码编出来的编译器. 两份编译器都留在构建阶段, 不会进最终镜像.
 
 ## 改版本时
 

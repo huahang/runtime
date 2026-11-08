@@ -1,17 +1,17 @@
 # runtime
 
-带 V2Ray 的 Distroless 镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出固定的 Go 1.27.1, V2Ray 由这套从源码编译出来的工具链来编. 最终镜像基于 `gcr.io/distroless/static-debian13`.
+带 V2Ray 的 Distroless 镜像. 构建在 Ubuntu 26.04 里完成: 系统自带的 Go 只负责引导出固定的 Go 1.27.3, V2Ray 由这套从源码编译出来的工具链来编. 最终镜像基于 `gcr.io/distroless/static-debian13`.
 
 ## 镜像内容
 
 | 组件 | 版本 | 路径 |
 |------|------|------|
-| V2Ray | 5.54.2 | `/opt/v2ray/v2ray` |
+| V2Ray | 5.56.0 | `/opt/v2ray/v2ray` |
 
 ## 构建说明
 
 - 构建环境会安装 `curl`, `file`, `git`, `golang`, `wget` 和 `zip`.
-- 系统自带的 Go 先从源码引导出固定的 Go 1.27.1, 再用它编译 V2Ray v5.54.2.
+- 系统自带的 Go 先从源码引导出固定的 Go 1.27.3, 再用它编译 V2Ray v5.56.0.
 - V2Ray 按固定的 Git tag 克隆, 由 `release/user-package.sh` 打包. 编译时设置 `CGO_ENABLED=0`, 并按 `amd64` 或 `arm64` 选择架构.
 - 生成的 tar 包留在 `artifacts` 目标中, 解压后的内容会复制进最终的 distroless 阶段.
 - 最终镜像以默认的 root 用户运行, 其中没有 Go 工具链, Xray, shell, 包管理器, 编译器, Git 和 init 进程.
